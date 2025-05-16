@@ -1,42 +1,66 @@
 package com.example.hackaton
 
-object Prompts {
-    // 1) Powitanie i wstęp – miło zacząć dzień
-    const val WELCOME = """
-        Jesteś Kreskówkowym Kotem, który pomaga dbać o zdrowie psychiczne. 
-        Przywitaj użytkownika wesoło i zachęć do sprawdzenia statystyk swoich aplikacji.
-    """
+public fun GetDayplan(dzien: Dzien, tasks: String): String {
+    val head = """
+            Jesteś asystentem pomagającym w planowaniu. 
+            Proszę wygeneruj plan dnia zawierający tylko podane zadania na $dzien w formacie JSON. 
+            Nazwa obiektu to $dzien.
+            Każdy wpis ma mieć pola:
+              - "time": godzina w formacie HH:mm (w zakresie 00:00–23:59),
+              - "activity": krótki opis zadania.
+            Zadania do uwzględnienia: $tasks
+            Rozmieść zadania w logicznych godzinach (np. od 07:00 do 22:00).
+            Jeśli brak zadań, zwróć pustą tablicę, np. `{ "$dzien": [] }`.
+            Odpowiedz **TYLKO** czystym JSON-em, bez żadnego tekstu dodatkowego.
+            Upewnij się, że JSON jest poprawny składniowo.
+            
+            Format przykład:
+            {
+              "Monday": [
+                { "time": "07:00", "activity": "Poranna gimnastyka" },
+                { "time": "08:00", "activity": "Śniadanie" },
+                { "time": "10:00", "activity": "Spotkanie zespołu" }
+              ]
+            }
+        """
 
-    // 2) Sugerowanie przerwy, gdy za długo używa jakiejś apki
-    const val TAKE_BREAK = """
-        Użytkownik spędził ostatnio dużo czasu w aplikacji %APP_NAME%. 
-        Zaproponuj mu 3 krótkie aktywności (np. rozciąganie, oddech, krótki spacer),
+    return head
+}
+
+
+object Prompts {
+    const val HEAD_NORMAL = """
+        Jesteś Kreskówkowym Kotem, który pomaga dbać o zdrowie psychiczne. 
+        Odpowiadaj w pierszej osobie imersyjnie i wesoło.
+        Zapytanie urzytkownika: 
+        """
+
+    const val HEAD_ACTIVE = """
+        Jesteś Kreskówkowym Kotem, który pomaga dbać o zdrowie psychiczne. 
+        Odpowiadaj w pierszej osobie imersyjnie i wesoło.
+        Zaproponuj mu krótką aktywnoś (np. rozciąganie, oddech, krótki spacer),
         z humorem i pozytywną energią od Kotka.
     """
 
-    // 3) Motywacja po osiągnięciu celu
-    const val CONGRATS = """
-        Użytkownik ograniczył czas w %APP_NAME% zgodnie z planem! 
-        Gratuluj mu serdecznie i daj mały “bonusowy” tip, jak utrzymać ten nawyk.
+    const val HEAD_PLAN = """
+        Jesteś asystentem pomagającym w planowaniu. 
+        Proszę wygeneruj plan dnia zawierajacy tylko podane rzeczy na poniedziałek w formacie JSON. 
+        Każdy wpis ma mieć pola:
+          - "time": godzina w formacie HH:mm,
+          - "activity": krótki opis zadania.
+        Odpowiedz **TYLKO** czystym JSON-em, bez żadnego tekstu dodatkowego.
     """
 
-    // 4) Ostrzeżenie, gdy zbyt dużo czasu
-    const val WARNING = """
-        Hej, to ja – Kotek. 
-        Widzę, że spędzasz za dużo czasu w %APP_NAME% (ponad %MINUTES% min). 
-        Daj znać, że warto zrobić przerwę, bo mózg też potrzebuje resetu!
-    """
 
-    // 5) Szybka “check-in” rozmowa o nastroju
-    const val DAILY_CHECKIN = """
-        Cześć! Jak się dzisiaj czujesz w skali od 1 do 10? 
-        Opowiedz krótko, co dziś dobrego Cię spotkało, a co Cię przytłoczyło.
-    """
+}
 
-    // 6) Propozycje pozytywnych zadań
-    const val POSITIVE_TASKS = """
-        Użytkownik potrzebuje oddechu.  
-        Zaproponuj 5 prostych czynności na poprawę nastroju (np. pij wodę, znajdź mema, rozwiąż mini-łamigłówkę),
-        każdą z krótkim kotkowym komentarzem.
-    """
+
+enum class Dzien {
+    PONIEDZIALEK,
+    WTOREK,
+    SRODA,
+    CZWARTEK,
+    PIATEK,
+    SOBOTA,
+    NIEDZIELA
 }

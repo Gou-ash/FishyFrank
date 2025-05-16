@@ -1,0 +1,68 @@
+package com.example.hackaton
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.remember
+
+@Serializable
+data class PlanEntry(val time: String, val activity: String)
+
+// Funkcja do parsowania
+fun parsePlan(json: String, dayName: String): List<PlanEntry> {
+    // zakładamy, że cała struktura to obiekt z kluczem-dniem:
+    // { "Monday": [ { "time": "...", "activity": "..." }, ... ] }
+    val tree = Json.parseToJsonElement(json).jsonObject
+    val arr = tree[dayName]?.toString() ?: "[]"
+    return Json.decodeFromString(arr)
+}
+
+@Composable
+fun DayPlanTimeline(entries: List<PlanEntry>) {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        entries.forEach { entry ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // kropka na osi
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .background(color = Color(0xFF6200EE), shape = CircleShape)
+                )
+                Spacer(Modifier.width(8.dp))
+                // tekst: godzina + aktywność
+                Column {
+                    Text(text = entry.time, fontSize = 14.sp, color = Color.Gray)
+                    Text(text = entry.activity, fontSize = 16.sp)
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+fun CreatePlan(json: String, dayName: String) {
+    // parsujemy raz, pamiętamy przy zmianie JSON-a
+    val plan = remember(json) { parsePlan(json, dayName) }
+
+    MaterialTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            DayPlanTimeline(entries = plan)
+        }
+    }
+}

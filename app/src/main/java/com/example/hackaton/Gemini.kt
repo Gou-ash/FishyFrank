@@ -38,7 +38,7 @@ public fun askGemini(prompt: String, onResponse: (String) -> Unit) {
     // Generate request
     val api = retrofit.create(GeminiApi::class.java)
     val request = GeminiRequest(
-        contents = listOf(Content(parts = listOf(Part(text = Prompts.TAKE_BREAK))))
+        contents = listOf(Content(parts = listOf(Part(text =  GetDayplan(Dzien.SOBOTA)+prompt))))
     )
 
     // API KEY
@@ -122,4 +122,16 @@ fun GeminiTest() {
             )
         }
     }
+
+
+    if(responseText!="Odpowiedź pojawi się tutaj")
+        CreatePlan(json = responseText, dayName = "Monday")
+}
+
+fun stripFences(raw: String): String {
+    return raw
+        .trim()
+        .removePrefix("```json")
+        .removeSuffix("```")
+        .trim()
 }
