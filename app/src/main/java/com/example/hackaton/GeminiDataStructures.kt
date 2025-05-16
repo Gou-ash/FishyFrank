@@ -4,6 +4,7 @@ data class GeminiRequest(
     val contents: List<Content>
 )
 
+
 data class Content(
     val parts: List<Part>,
     val role: String = "user"

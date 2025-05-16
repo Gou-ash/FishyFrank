@@ -38,7 +38,7 @@ public fun askGemini(prompt: String, onResponse: (String) -> Unit) {
     // Generate request
     val api = retrofit.create(GeminiApi::class.java)
     val request = GeminiRequest(
-        contents = listOf(Content(parts = listOf(Part(text = prompt))))
+        contents = listOf(Content(parts = listOf(Part(text = Prompts.TAKE_BREAK))))
     )
 
     // API KEY
