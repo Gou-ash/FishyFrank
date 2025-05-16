@@ -28,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 // Main ask function
-public fun askGemini(prompt: String, onResponse: (String) -> Unit) {
+public fun askGemini(dzien: Dzien, prompt: String, onResponse: (String) -> Unit) {
     // Build retrofit
     val retrofit = Retrofit.Builder()
         .baseUrl("https://generativelanguage.googleapis.com/")
@@ -38,7 +38,7 @@ public fun askGemini(prompt: String, onResponse: (String) -> Unit) {
     // Generate request
     val api = retrofit.create(GeminiApi::class.java)
     val request = GeminiRequest(
-        contents = listOf(Content(parts = listOf(Part(text =  GetDayplan(Dzien.SOBOTA)+prompt))))
+        contents = listOf(Content(parts = listOf(Part(text =  GetDayplan(dzien, prompt)))))
     )
 
     // API KEY
@@ -107,14 +107,14 @@ fun GeminiChatScreen(
 
 
 @Composable
-fun GeminiTest() {
+fun GeminiTest(dzien: Dzien) {
     var responseText by remember { mutableStateOf("Odpowiedź pojawi się tutaj") }
 
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             GeminiChatScreen(
                 onSend = { prompt ->
-                    askGemini(prompt) { reply ->
+                    askGemini(dzien, prompt) { reply ->
                         responseText = reply
                     }
                 },
@@ -123,9 +123,8 @@ fun GeminiTest() {
         }
     }
 
-
-    if(responseText!="Odpowiedź pojawi się tutaj")
-        CreatePlan(json = responseText, dayName = "Monday")
+    if (responseText!="Odpowiedź pojawi się tutaj")
+        CreatePlan(stripFences(responseText), dayName = "SOBOTA")
 }
 
 fun stripFences(raw: String): String {

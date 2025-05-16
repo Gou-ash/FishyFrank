@@ -23,10 +23,7 @@ import androidx.compose.runtime.remember
 @Serializable
 data class PlanEntry(val time: String, val activity: String)
 
-// Funkcja do parsowania
 fun parsePlan(json: String, dayName: String): List<PlanEntry> {
-    // zakładamy, że cała struktura to obiekt z kluczem-dniem:
-    // { "Monday": [ { "time": "...", "activity": "..." }, ... ] }
     val tree = Json.parseToJsonElement(json).jsonObject
     val arr = tree[dayName]?.toString() ?: "[]"
     return Json.decodeFromString(arr)
@@ -37,14 +34,12 @@ fun DayPlanTimeline(entries: List<PlanEntry>) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         entries.forEach { entry ->
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // kropka na osi
                 Box(
                     modifier = Modifier
                         .size(12.dp)
                         .background(color = Color(0xFF6200EE), shape = CircleShape)
                 )
                 Spacer(Modifier.width(8.dp))
-                // tekst: godzina + aktywność
                 Column {
                     Text(text = entry.time, fontSize = 14.sp, color = Color.Gray)
                     Text(text = entry.activity, fontSize = 16.sp)
@@ -57,7 +52,6 @@ fun DayPlanTimeline(entries: List<PlanEntry>) {
 
 @Composable
 fun CreatePlan(json: String, dayName: String) {
-    // parsujemy raz, pamiętamy przy zmianie JSON-a
     val plan = remember(json) { parsePlan(json, dayName) }
 
     MaterialTheme {

@@ -50,8 +50,6 @@ object Prompts {
           - "activity": krótki opis zadania.
         Odpowiedz **TYLKO** czystym JSON-em, bez żadnego tekstu dodatkowego.
     """
-
-
 }
 
 
