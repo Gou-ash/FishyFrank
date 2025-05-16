@@ -1,7 +1,5 @@
 package com.example.hackaton
 
-import android.Manifest
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,43 +8,31 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.hackaton.ui.theme.HackatonTheme
 
 class MainActivity : ComponentActivity() {
 
-    companion object {
-        const val CHANNEL_ID = "my_channel_id"
-        const val NOTIFICATION_ID = 1
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        // Request notification permission if on Android 13+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                1001
-            )
-        }
-
-        // Create notification channel
-        val notificationHelper = NotificationHelper(this)
-        notificationHelper.createChannel(CHANNEL_ID)
-
         setContent {
             HackatonTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // Show a button to send notification
-                    NotificationDemo(
+                    NotificationTestUI(
                         modifier = Modifier.padding(innerPadding),
-                        onSendNotif = {
-                            notificationHelper.sendNotification(CHANNEL_ID, NOTIFICATION_ID)
+                        sendNotification = {
+                            // Request notification permission if needed (Android 13+)
+                            NotificationHelper.requestNotificationPermission(this)
+
+                            // Create NotificationHelper and send a notification
+                            val helper = NotificationHelper(this)
+                            helper.sendNotification(
+                                notificationId = 1,
+                                title = "Hello from Hackaton!",
+                                text = "If you see this, notifications work 🎉"
+                            )
                         }
                     )
                 }
@@ -56,15 +42,22 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun NotificationDemo(modifier: Modifier = Modifier, onSendNotif: () -> Unit) {
+fun NotificationTestUI(
+    modifier: Modifier = Modifier,
+    sendNotification: () -> Unit
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Hello Android!")
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { onSendNotif() }) {
+        Text(
+            text = "Test Notifications",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+        Button(onClick = { sendNotification() }) {
             Text("Send Notification")
         }
     }
@@ -72,8 +65,8 @@ fun NotificationDemo(modifier: Modifier = Modifier, onSendNotif: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun NotificationDemoPreview() {
+fun NotificationTestUIPreview() {
     HackatonTheme {
-        NotificationDemo(onSendNotif = {})
+        NotificationTestUI(sendNotification = {})
     }
 }
