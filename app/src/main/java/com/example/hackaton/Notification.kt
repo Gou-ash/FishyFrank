@@ -51,7 +51,7 @@ class Notification(val context: Context) {
             .setSmallIcon(R.drawable.notification_icon)
             .setContentTitle("Heeeej!")
             .setContentText("Spędziłeś już " + time + " minut w aplikacji " + appName + ", może czas na przerwę? Pobaw się ze mną!")
-            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(
