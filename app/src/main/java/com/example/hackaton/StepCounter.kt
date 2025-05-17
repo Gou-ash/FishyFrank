@@ -6,27 +6,37 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 
-class StepCounter(val context: Context) {
-    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    private val sensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-    private var listener: SensorEventListener? = null
+class StepCounter(private val context: Context) : SensorEventListener {
+    private var sensorManager: SensorManager? = null
+    private var stepSensor: Sensor? = null
+    private var callback: ((Long) -> Unit)? = null
+    private var listening = false
 
-    fun startListening(onStepsChanged: (Long) -> Unit) {
-        if (listener != null) return // Prevent multiple registrations
-        listener = object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent?) {
-                if (event != null) {
-                    val stepsSinceLastReboot = event.values[0].toLong()
-                    onStepsChanged(stepsSinceLastReboot)
-                }
-            }
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+    fun startListening(onStepChanged: (Long) -> Unit) {
+        if (listening) return // Already listening
+        if (sensorManager == null) {
+            sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+            stepSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
         }
-        sensorManager.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_UI)
+        callback = onStepChanged
+        listening = true
+        stepSensor?.let {
+            sensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        }
     }
 
     fun stopListening() {
-        listener?.let { sensorManager.unregisterListener(it) }
-        listener = null
+        if (sensorManager != null) {
+            sensorManager?.unregisterListener(this, stepSensor)
+        }
+        listening = false
+        callback = null
     }
+
+    override fun onSensorChanged(event: android.hardware.SensorEvent?) {
+        if (event == null || event.sensor.type != Sensor.TYPE_STEP_COUNTER) return
+        callback?.invoke(event.values[0].toLong())
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 }

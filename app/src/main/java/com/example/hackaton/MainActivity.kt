@@ -1,17 +1,11 @@
 package com.example.hackaton
 
-import android.app.AppOpsManager
-import android.app.usage.UsageStats
-import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Binder
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.View
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,85 +19,148 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
-import com.example.hackaton.ui.theme.HackatonTheme
 
+// --- Trackable Apps Model & List ---
+data class TrackableApp(val name: String, val packageName: String)
+
+val trackableApps = listOf(
+    TrackableApp("TikTok", "com.zhiliaoapp.musically"),
+    TrackableApp("Instagram", "com.instagram.android"),
+    TrackableApp("Facebook", "com.facebook.katana"),
+    TrackableApp("Twitter", "com.twitter.android"),
+    TrackableApp("YouTube", "com.google.android.youtube"),
+)
+
+
+// --- MainActivity ---
 class MainActivity : ComponentActivity() {
 
-    private val notification = Notification(this)
-    private val ai = Gemini()
+    private val notification by lazy { Notification(this) }
+    private val appUsageTimeManager by lazy { AppUsageTimeManager(this) }
 
-    // Place state here so it survives recompositions and can be updated in onResume()
+    private lateinit var stepCounter: StepCounter
+    private lateinit var stepStorage: StepStorage
+
     private var usagePermissionGranted by mutableStateOf(false)
-    private var tiktokMinutes by mutableStateOf(-1)
+    private var trackedApp by mutableStateOf(trackableApps[0])
+    private var trackedAppMinutes by mutableStateOf(-1)
     private var askedUsageAccessThisSession = false
+
+    // Persistent step tracking variables
+    private var lastSensorValue by mutableStateOf(0L)
+    private var totalSteps by mutableStateOf(0L)
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        stepCounter = StepCounter(this)
+        stepStorage = StepStorage(this)
+
+        // Read last session state (lastSensorValue, totalSteps)
+        val (storedLastSensorValue, storedTotalSteps) = stepStorage.readSession()
+        lastSensorValue = storedLastSensorValue
+        totalSteps = storedTotalSteps
+
         // Initial permission check
-        usagePermissionGranted = hasUsageStatsPermission()
+        usagePermissionGranted = appUsageTimeManager.hasUsageStatsPermission()
         if (!usagePermissionGranted && !askedUsageAccessThisSession) {
             askedUsageAccessThisSession = true
             launchUsageAccessSettings()
         } else if (usagePermissionGranted) {
-            tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
+            trackedAppMinutes = appUsageTimeManager.getAppUsageMinutes(trackedApp.packageName)
         }
 
-        setContentView(R.layout.main_activity)
+        setContent {
+            var notificationRequested by remember { mutableStateOf(false) }
+            var stepsState by remember { mutableStateOf(totalSteps) }
 
-        val settingsActivityButton = findViewById<Button>(R.id.settingsActivityButton)
-        settingsActivityButton.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
+            // Real-time step listening with persistent session logic
+            DisposableEffect(Unit) {
+                stepCounter.startListening { newSensorValue ->
+                    // If first launch or after reboot, initialize lastSensorValue
+                    if (lastSensorValue == 0L) {
+                        lastSensorValue = newSensorValue
+                    }
+                    val delta = (newSensorValue - lastSensorValue)
+                    if (delta > 0) {
+                        totalSteps += delta
+                        stepsState = totalSteps
+                        lastSensorValue = newSensorValue
+                        // Save to storage every update
+                        stepStorage.saveSession(lastSensorValue, totalSteps)
+                    }
+                }
+                onDispose {
+                    stepCounter.stopListening()
+                    // Save on dispose for safety
+                    stepStorage.saveSession(lastSensorValue, totalSteps)
+                }
+            }
+
+            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                GreetingWithButtonAndUsage(
+                    name = "Android",
+                    modifier = Modifier.padding(innerPadding),
+                    onNotifyClick = {
+                        notificationRequested = true
+                    },
+                    onRequestUsagePermission = {
+                        launchUsageAccessSettings()
+                    },
+                    usagePermissionGranted = usagePermissionGranted,
+                    trackedApp = trackedApp,
+                    trackedAppMinutes = trackedAppMinutes,
+                    appList = trackableApps,
+                    onAppChange = { newApp ->
+                        trackedApp = newApp
+                        trackedAppMinutes = appUsageTimeManager.getAppUsageMinutes(newApp.packageName)
+                    },
+                    steps = stepsState,
+                    isLoadingSteps = false,
+                    onReloadSteps = {}
+                )
+            }
+
+            if (notificationRequested) {
+                notificationRequested = false
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    notification.showNotification(
+                        trackedAppMinutes.takeIf { it >= 0 } ?: 0,
+                        trackedApp.name
+                    )
+                }
+            }
         }
-
-        val rightActivityButton = findViewById<Button>(R.id.rightActivity)
-        rightActivityButton.setOnClickListener {
-            val intent = Intent(this, ScrollingActivity::class.java)
-            startActivity(intent)
-        }
-
         notification.createNotificationChannel()
     }
 
-    // On returning to the app, check if the permission was granted and update usage
+    override fun onPause() {
+        super.onPause()
+        // Save session state on pause
+        stepStorage.saveSession(lastSensorValue, totalSteps)
+    }
+
     override fun onResume() {
         super.onResume()
-        val permissionNow = hasUsageStatsPermission()
+        val permissionNow = appUsageTimeManager.hasUsageStatsPermission()
         if (permissionNow != usagePermissionGranted) {
             usagePermissionGranted = permissionNow
             if (permissionNow) {
-                tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
+                trackedAppMinutes = appUsageTimeManager.getAppUsageMinutes(trackedApp.packageName)
             }
         } else if (permissionNow) {
-            // Always refresh usage
-            tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
+            trackedAppMinutes = appUsageTimeManager.getAppUsageMinutes(trackedApp.packageName)
         }
     }
 
-    /** Checks if Usage Stats permission is granted */
-    private fun hasUsageStatsPermission(): Boolean {
-        val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            appOps.unsafeCheckOpNoThrow(
-                AppOpsManager.OPSTR_GET_USAGE_STATS,
-                applicationInfo.uid,
-                packageName
-            )
-        } else {
-            @Suppress("DEPRECATION")
-            appOps.checkOpNoThrow(
-                AppOpsManager.OPSTR_GET_USAGE_STATS,
-                Binder.getCallingUid(),
-                packageName
-            )
-        }
-        return mode == AppOpsManager.MODE_ALLOWED
-    }
-
-    /** Launches the Usage Access Settings screen */
     private fun launchUsageAccessSettings() {
         try {
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
@@ -116,26 +173,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** Returns minutes spent in a given app in the last 24 hours */
-    private fun getAppUsageMinutes(appPackage: String): Int {
-        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val endTime = System.currentTimeMillis()
-        val startTime = endTime - 1000L * 60 * 60 * 24 // 24 hours ago
-        val stats: List<UsageStats> =
-            usageStatsManager.queryUsageStats(
-                UsageStatsManager.INTERVAL_DAILY,
-                startTime,
-                endTime
-            )
-        val usage = stats.find { it.packageName == appPackage }
-        return if (usage != null) (usage.totalTimeInForeground / 60000).toInt() else 0
-    }
-
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            notification.showNotification(15, "TikTok")
+            notification.showNotification(15, trackedApp.name)
         } else {
             Toast.makeText(
                 applicationContext, "Permission denied",
@@ -143,58 +185,104 @@ class MainActivity : ComponentActivity() {
             ).show()
         }
     }
+}
 
-
-    @Composable
-    fun GreetingWithButtonAndUsage(
-        name: String,
-        modifier: Modifier = Modifier,
-        onNotifyClick: () -> Unit,
-        onRequestUsagePermission: () -> Unit,
-        usagePermissionGranted: Boolean,
-        tiktokMinutes: Int
+// --- UI: GreetingWithButtonAndUsage ---
+@Composable
+fun GreetingWithButtonAndUsage(
+    name: String,
+    modifier: Modifier = Modifier,
+    onNotifyClick: () -> Unit,
+    onRequestUsagePermission: () -> Unit,
+    usagePermissionGranted: Boolean,
+    trackedApp: TrackableApp,
+    trackedAppMinutes: Int,
+    appList: List<TrackableApp>,
+    onAppChange: (TrackableApp) -> Unit,
+    steps: Long,
+    isLoadingSteps: Boolean,
+    onReloadSteps: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize()
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Hello $name!",
-                modifier = Modifier.padding(bottom = 16.dp)
+        Text("Hi $name!")
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            Text("Tracked App:")
+            Spacer(modifier = Modifier.width(8.dp))
+            DropdownMenuBox(
+                selectedApp = trackedApp,
+                appList = appList,
+                onAppChange = onAppChange
             )
-            Button(onClick = onNotifyClick) {
-                Text("Send Notification")
-            }
-            Spacer(Modifier.height(24.dp))
-            if (!usagePermissionGranted) {
-                Text("Usage access permission is required to show TikTok usage time.")
-                Button(onClick = onRequestUsagePermission) {
-                    Text("Grant Usage Access")
-                }
-            } else {
-                if (tiktokMinutes >= 0) {
-                    Text("Time spent in TikTok in last 24h: $tiktokMinutes minutes")
-                } else {
-                    Text("Loading TikTok usage...")
-                }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        if (usagePermissionGranted) {
+            Text("You've spent ${if (trackedAppMinutes >= 0) "$trackedAppMinutes min" else "--"} on ${trackedApp.name} today.")
+        } else {
+            Button(onClick = onRequestUsagePermission) {
+                Text("Grant Usage Access")
             }
         }
-    }
 
-    @Preview(showBackground = true)
-    @Composable
-    fun GreetingWithButtonAndUsagePreview() {
-        HackatonTheme {
-            GreetingWithButtonAndUsage(
-                name = "Android",
-                onNotifyClick = {},
-                onRequestUsagePermission = {},
-                usagePermissionGranted = false,
-                tiktokMinutes = -1
-            )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onNotifyClick) {
+            Text("Notify Usage")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("Steps counted this session: $steps")
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = onReloadSteps, enabled = !isLoadingSteps) {
+            Text("Reload Steps")
         }
     }
 }
 
+@Composable
+fun DropdownMenuBox(
+    selectedApp: TrackableApp,
+    appList: List<TrackableApp>,
+    onAppChange: (TrackableApp) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        Button(onClick = { expanded = true }) {
+            Text(selectedApp.name)
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            appList.forEach { app ->
+                DropdownMenuItem(
+                    text = { Text(app.name) },
+                    onClick = {
+                        onAppChange(app)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingWithButtonAndUsageUsage() {
+    GreetingWithButtonAndUsage(
+        name = "Android",
+        onNotifyClick = {},
+        onRequestUsagePermission = {},
+        usagePermissionGranted = false,
+        trackedApp = trackableApps[0],
+        trackedAppMinutes = -1,
+        appList = trackableApps,
+        onAppChange = {},
+        steps = 0,
+        isLoadingSteps = false,
+        onReloadSteps = {}
+    )
+}
