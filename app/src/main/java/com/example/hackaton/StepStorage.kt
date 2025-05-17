@@ -1,23 +1,28 @@
-package com.example.hackaton;
+package com.example.hackaton
 
-import android.content.Context;
-import java.io.File;
+import android.content.Context
 
-class StepStorage(val context:Context) {
+class StepStorage(val context: Context) {
+    private val fileName = "steps_storage.txt"
 
-    private val fileName = "steps.txt"
-
-    fun saveSteps(steps: Long) {
-        context.openFileOutput(fileName, Context.MODE_PRIVATE).use { output ->
-                output.write(steps.toString().toByteArray())
+    // Save both lastSensorValue and totalSteps
+    fun saveSession(lastSensorValue: Long, totalSteps: Long) {
+        context.openFileOutput(fileName, Context.MODE_PRIVATE).bufferedWriter().use {
+            it.write("$lastSensorValue\n$totalSteps")
         }
     }
 
-    fun readSteps(): Long {
+    // Returns Pair<lastSensorValue, totalSteps>
+    fun readSession(): Pair<Long, Long> {
         return try {
-            context.openFileInput(fileName).bufferedReader().use { it.readText() }.toLongOrNull() ?: 0L
+            context.openFileInput(fileName).bufferedReader().useLines { lines ->
+                val list = lines.take(2).toList()
+                val lastSensorValue = list.getOrNull(0)?.toLongOrNull() ?: 0L
+                val totalSteps = list.getOrNull(1)?.toLongOrNull() ?: 0L
+                lastSensorValue to totalSteps
+            }
         } catch (e: Exception) {
-            0L
+            0L to 0L
         }
     }
 }

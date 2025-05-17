@@ -20,9 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.example.hackaton.ui.theme.HackatonTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 data class TrackableApp(val name: String, val packageName: String)
 
@@ -47,9 +44,9 @@ class MainActivity : ComponentActivity() {
     private var trackedAppMinutes by mutableStateOf(-1)
     private var askedUsageAccessThisSession = false
 
-    // Step state
-    private var steps by mutableStateOf(0L)
-    private var isLoadingSteps by mutableStateOf(false)
+    // Persistent step tracking variables
+    private var lastSensorValue by mutableStateOf(0L)
+    private var totalSteps by mutableStateOf(0L)
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +55,11 @@ class MainActivity : ComponentActivity() {
 
         stepCounter = StepCounter(this)
         stepStorage = StepStorage(this)
-        steps = stepStorage.readSteps()
+
+        // Read last session state (lastSensorValue, totalSteps)
+        val (storedLastSensorValue, storedTotalSteps) = stepStorage.readSession()
+        lastSensorValue = storedLastSensorValue
+        totalSteps = storedTotalSteps
 
         // Initial permission check
         usagePermissionGranted = appUsageTimeManager.hasUsageStatsPermission()
@@ -72,8 +73,30 @@ class MainActivity : ComponentActivity() {
         setContent {
             HackatonTheme {
                 var notificationRequested by remember { mutableStateOf(false) }
-                var stepsState by remember { mutableStateOf(steps) }
-                var isLoading by remember { mutableStateOf(false) }
+                var stepsState by remember { mutableStateOf(totalSteps) }
+
+                // Real-time step listening with persistent session logic
+                DisposableEffect(Unit) {
+                    stepCounter.startListening { newSensorValue ->
+                        // If first launch or after reboot, initialize lastSensorValue
+                        if (lastSensorValue == 0L) {
+                            lastSensorValue = newSensorValue
+                        }
+                        val delta = (newSensorValue - lastSensorValue)
+                        if (delta > 0) {
+                            totalSteps += delta
+                            stepsState = totalSteps
+                            lastSensorValue = newSensorValue
+                            // Save to storage every update
+                            stepStorage.saveSession(lastSensorValue, totalSteps)
+                        }
+                    }
+                    onDispose {
+                        stepCounter.stopListening()
+                        // Save on dispose for safety
+                        stepStorage.saveSession(lastSensorValue, totalSteps)
+                    }
+                }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     GreetingWithButtonAndUsage(
@@ -94,16 +117,8 @@ class MainActivity : ComponentActivity() {
                             trackedAppMinutes = appUsageTimeManager.getAppUsageMinutes(newApp.packageName)
                         },
                         steps = stepsState,
-                        isLoadingSteps = isLoading,
-                        onReloadSteps = {
-                            isLoading = true
-                            CoroutineScope(Dispatchers.Main).launch {
-                                val newSteps = stepCounter.steps()
-                                stepStorage.saveSteps(newSteps)
-                                stepsState = newSteps
-                                isLoading = false
-                            }
-                        }
+                        isLoadingSteps = false,
+                        onReloadSteps = {}
                     )
                 }
 
@@ -125,6 +140,12 @@ class MainActivity : ComponentActivity() {
             }
         }
         notification.createNotificationChannel()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Save session state on pause
+        stepStorage.saveSession(lastSensorValue, totalSteps)
     }
 
     override fun onResume() {
@@ -243,16 +264,8 @@ fun GreetingWithButtonAndUsage(
         Divider()
         Spacer(Modifier.height(24.dp))
         // Step Counter UI
-        Text("Steps taken since last reboot (saved):")
-        if (isLoadingSteps) {
-            Text("Loading steps...")
-        } else {
-            Text("$steps steps")
-        }
-        Spacer(Modifier.height(12.dp))
-        Button(onClick = onReloadSteps, enabled = !isLoadingSteps) {
-            Text("Reload Step Count")
-        }
+        Text("Steps taken since last reboot (live, across sessions):")
+        Text("$steps steps")
     }
 }
 
