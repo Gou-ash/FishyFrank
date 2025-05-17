@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,17 +54,19 @@ class MainActivity : ComponentActivity() {
 
         setContentView(R.layout.main_activity)
 
-        val settingsActivityButton = findViewById<Button>(R.id.settingsActivityButton)
+        val settingsActivityButton = findViewById<ImageButton>(R.id.settingsActivityButton)
         settingsActivityButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
 
-        val rightActivityButton = findViewById<Button>(R.id.rightActivity)
+        val rightActivityButton = findViewById<ImageButton>(R.id.rightActivity)
         rightActivityButton.setOnClickListener {
             val intent = Intent(this, ScrollingActivity::class.java)
             startActivity(intent)
         }
+
+
 
         notification.createNotificationChannel()
     }
