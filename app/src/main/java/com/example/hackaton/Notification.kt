@@ -29,7 +29,7 @@ class Notification(val context: Context) {
 
     @SuppressLint("MissingPermission")
     public fun showNotification(time:Int, appName:String ) {
-        // Set intents and pending intents to call service on click of "dismiss" action button of notification
+
         val dismissIntent = Intent(context, MainActivity::class.java).apply {
             action = ACTION_DISMISS
         }
@@ -38,7 +38,6 @@ class Notification(val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0)
         )
 
-        // Set intents and pending intents to call service on click of "snooze" action button of notification
         val snoozeIntent = Intent(context, MainActivity::class.java).apply {
             action = ACTION_SNOOZE
         }
@@ -55,12 +54,12 @@ class Notification(val context: Context) {
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(
-                R.drawable.ic_launcher_background, // Replace with your dismiss icon
+                R.drawable.ic_launcher_background,
                 "Dismiss",
                 piDismiss
             )
             .addAction(
-                R.drawable.ic_launcher_background, // Replace with your snooze icon
+                R.drawable.ic_launcher_background,
                 "Snooze",
                 piSnooze
             )

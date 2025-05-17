@@ -20,6 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.example.hackaton.ui.theme.HackatonTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 data class TrackableApp(val name: String, val packageName: String)
 
@@ -36,15 +39,26 @@ class MainActivity : ComponentActivity() {
     private val notification by lazy { Notification(this) }
     private val appUsageTimeManager by lazy { AppUsageTimeManager(this) }
 
+    private lateinit var stepCounter: StepCounter
+    private lateinit var stepStorage: StepStorage
+
     private var usagePermissionGranted by mutableStateOf(false)
     private var trackedApp by mutableStateOf(trackableApps[0])
     private var trackedAppMinutes by mutableStateOf(-1)
     private var askedUsageAccessThisSession = false
 
+    // Step state
+    private var steps by mutableStateOf(0L)
+    private var isLoadingSteps by mutableStateOf(false)
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        stepCounter = StepCounter(this)
+        stepStorage = StepStorage(this)
+        steps = stepStorage.readSteps()
 
         // Initial permission check
         usagePermissionGranted = appUsageTimeManager.hasUsageStatsPermission()
@@ -58,6 +72,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             HackatonTheme {
                 var notificationRequested by remember { mutableStateOf(false) }
+                var stepsState by remember { mutableStateOf(steps) }
+                var isLoading by remember { mutableStateOf(false) }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     GreetingWithButtonAndUsage(
@@ -76,6 +92,17 @@ class MainActivity : ComponentActivity() {
                         onAppChange = { newApp ->
                             trackedApp = newApp
                             trackedAppMinutes = appUsageTimeManager.getAppUsageMinutes(newApp.packageName)
+                        },
+                        steps = stepsState,
+                        isLoadingSteps = isLoading,
+                        onReloadSteps = {
+                            isLoading = true
+                            CoroutineScope(Dispatchers.Main).launch {
+                                val newSteps = stepCounter.steps()
+                                stepStorage.saveSteps(newSteps)
+                                stepsState = newSteps
+                                isLoading = false
+                            }
                         }
                     )
                 }
@@ -150,7 +177,10 @@ fun GreetingWithButtonAndUsage(
     trackedApp: TrackableApp,
     trackedAppMinutes: Int,
     appList: List<TrackableApp>,
-    onAppChange: (TrackableApp) -> Unit
+    onAppChange: (TrackableApp) -> Unit,
+    steps: Long,
+    isLoadingSteps: Boolean,
+    onReloadSteps: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -209,6 +239,20 @@ fun GreetingWithButtonAndUsage(
                 Text("Loading usage...")
             }
         }
+        Spacer(Modifier.height(24.dp))
+        Divider()
+        Spacer(Modifier.height(24.dp))
+        // Step Counter UI
+        Text("Steps taken since last reboot (saved):")
+        if (isLoadingSteps) {
+            Text("Loading steps...")
+        } else {
+            Text("$steps steps")
+        }
+        Spacer(Modifier.height(12.dp))
+        Button(onClick = onReloadSteps, enabled = !isLoadingSteps) {
+            Text("Reload Step Count")
+        }
     }
 }
 
@@ -224,7 +268,10 @@ fun GreetingWithButtonAndUsagePreview() {
             trackedApp = trackableApps[0],
             trackedAppMinutes = -1,
             appList = trackableApps,
-            onAppChange = {}
+            onAppChange = {},
+            steps = 0,
+            isLoadingSteps = false,
+            onReloadSteps = {}
         )
     }
 }
