@@ -7,91 +7,91 @@
 
 
     <ImageButton
-        android:id="@+id/SettingsActivityButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="26dp"
-        android:layout_marginBottom="69dp"
-        android:background="@drawable/round_button_background"
-        android:contentDescription="Button 3"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_sport"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/SetingsHomeButton"
-        app:tint="#FFFFFF" />
-
-    <ImageButton
         android:id="@+id/SetingsHomeButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="69dp"
+        android:layout_marginStart="208dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 1"
         android:scaleType="centerInside"
         android:src="@drawable/ic_home"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/settingsActivityButton4"
+        app:layout_constraintEnd_toStartOf="@+id/SettingsActivityButton"
+        app:layout_constraintStart_toStartOf="parent"
         app:tint="#FFFFFF" />
 
     <ImageButton
-        android:id="@+id/SetingsSetingsButton"
+        android:id="@+id/SettingsActivityButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginStart="46dp"
-        android:layout_marginBottom="69dp"
+        android:layout_marginEnd="68dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 3"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_sleep"
+        android:src="@drawable/ic_sport"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:tint="#FFFFFF" />
 
     <ImageButton
         android:id="@+id/settingsActivityButton4"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginBottom="69dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/round_button_background"
+        android:contentDescription="Button 3"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_sleep"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/SetingsSetingsButton"
+        app:tint="#FFFFFF" />
+
+    <ImageButton
+        android:id="@+id/SetingsSetingsButton"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 3"
         android:scaleType="centerInside"
         android:src="@drawable/ic_water"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/SetingsSetingsButton"
+        app:layout_constraintEnd_toStartOf="@+id/SetingsHomeButton"
         app:tint="#FFFFFF" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="240dp"
-        android:layout_height="133dp"
-        android:layout_marginStart="75dp"
-        android:layout_marginTop="146dp"
-        android:text="Time spend per app:"
-        android:textSize="24sp"
+    <Button
+        android:id="@+id/button7"
+        android:layout_width="315dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="43dp"
+        android:layout_marginTop="55dp"
+        android:text="Manage Notifications"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/timePerAppLabel"
-        android:layout_width="240dp"
-        android:layout_height="133dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="288dp"
-        android:text="Time spend per app:"
-        android:textSize="24sp"
+    <Button
+        android:id="@+id/button8"
+        android:layout_width="307dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="46dp"
+        android:layout_marginTop="42dp"
+        android:text="Desired Activities"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/button7" />
 
-    <FrameLayout
-        android:id="@+id/settings1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <FrameLayout
-        android:id="@+id/settings"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <Button
+        android:id="@+id/button9"
+        android:layout_width="307dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="46dp"
+        android:layout_marginTop="37dp"
+        android:text="Tracked Apps"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button8" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

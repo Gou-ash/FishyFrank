@@ -1,74 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#2c245c"
-    tools:context=".MainActivity"
-    tools:ignore="ExtraText"
-    tools:layout_editor_absoluteX="0dp"
-    tools:layout_editor_absoluteY="-80dp">
+    tools:context=".MainActivity">
 
+    <!-- Title at the top -->
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Czas w aplikacji"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.05"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="52dp"/>
 
+    <!-- First App block -->
+    <!-- App name (dynamic) -->
+    <TextView
+        android:id="@+id/textViewAppName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Nazwa aplikacji"
+        android:textColor="#9fa8da"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:fontFamily="sans-serif"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"/>
 
+    <!-- Big number for minutes spent (dynamic) -->
+    <TextView
+        android:id="@+id/textViewMinutes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="#FFFFFF"
+        android:textSize="80sp"
+        android:textStyle="bold"
+        android:gravity="end"
+        app:layout_constraintTop_toBottomOf="@id/textViewAppName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/textViewLabelMinutes"
+        app:layout_constraintEnd_toStartOf="@id/textViewLabelMinutes"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"/>
 
-    <!-- 4 round icon buttons -->
+    <!-- Label: "minut" -->
+    <TextView
+        android:id="@+id/textViewLabelMinutes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="minut"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="normal"
+        android:gravity="start|bottom"
+        app:layout_constraintBottom_toBottomOf="@id/textViewMinutes"
+        app:layout_constraintStart_toEndOf="@id/textViewMinutes"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="32dp"/>
 
-    <ImageButton
-        android:id="@+id/HomeTimeButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="68dp"
-        android:layout_marginBottom="60dp"
-        android:background="@drawable/round_button_background"
-        android:contentDescription="Button 1"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_home"
+    <!-- Second App block -->
+    <!-- App name (dynamic) -->
+    <TextView
+        android:id="@+id/textViewAppName2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Facebook"
+        android:textColor="#80cbc4"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:fontFamily="sans-serif"
+        app:layout_constraintTop_toBottomOf="@id/textViewLabelMinutes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="36dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"/>
+
+    <TextView
+        android:id="@+id/textViewMinutes2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="#FFFFFF"
+        android:textSize="80sp"
+        android:textStyle="bold"
+        android:gravity="end"
+        app:layout_constraintTop_toBottomOf="@id/textViewAppName2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/textViewLabelMinutes2"
+        app:layout_constraintEnd_toStartOf="@id/textViewLabelMinutes2"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"/>
+
+    <TextView
+        android:id="@+id/textViewLabelMinutes2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="minut"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="normal"
+        android:gravity="start|bottom"
+        app:layout_constraintBottom_toBottomOf="@id/textViewMinutes2"
+        app:layout_constraintStart_toEndOf="@id/textViewMinutes2"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="32dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomButtonBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:tint="#FFFFFF" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="48dp">
 
-    <ImageButton
-        android:id="@+id/rightActivity"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="60dp"
-        android:background="@drawable/round_button_background"
-        android:contentDescription="Button 4"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_sport"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/TimeSettingsButton"
-        app:tint="#FFFFFF" />
+        <ImageButton
+            android:id="@+id/HomeTimeButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="60dp"
+            android:background="@drawable/round_button_background"
+            android:contentDescription="Home"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_home"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:tint="#FFFFFF" />
 
-    <ImageButton
-        android:id="@+id/TimeSettingsButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="60dp"
-        android:background="@drawable/round_button_background"
-        android:contentDescription="Button 3"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_settings"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn2"
-        app:tint="#FFFFFF" />
+        <ImageButton
+            android:id="@+id/btn2"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="25dp"
+            android:background="@drawable/round_button_background"
+            android:contentDescription="Water"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_water"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/HomeTimeButton"
+            app:tint="#FFFFFF" />
 
-    <ImageButton
-        android:id="@+id/btn2"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="60dp"
-        android:background="@drawable/round_button_background"
-        android:contentDescription="Button 2"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_water"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/HomeTimeButton"
-        app:tint="#FFFFFF" />
+        <ImageButton
+            android:id="@+id/TimeSettingsButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="22dp"
+            android:background="@drawable/round_button_background"
+            android:contentDescription="Settings"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_settings"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn2"
+            app:tint="#FFFFFF" />
+
+        <ImageButton
+            android:id="@+id/rightActivity"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/round_button_background"
+            android:contentDescription="Sport"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_sport"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/TimeSettingsButton"
+            app:tint="#FFFFFF" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
