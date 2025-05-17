@@ -23,6 +23,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.Headers
+import retrofit2.http.POST
+import retrofit2.http.Query
 
 // Main ask function
 public fun askGemini(prompt: String, onResponse: (String) -> Unit) {
@@ -99,8 +103,6 @@ fun GeminiChatScreen(
         }
     }
 }
-
-
 @Composable
 fun GeminiTest() {
     var responseText by remember { mutableStateOf("Odpowiedź pojawi się tutaj") }
@@ -120,10 +122,39 @@ fun GeminiTest() {
 
 }
 
+// UTILS
 fun stripFences(raw: String): String {
     return raw
         .trim()
         .removePrefix("```json")
         .removeSuffix("```")
         .trim()
+}
+
+// DATA STRUCTURES
+data class GeminiRequest(
+    val contents: List<Content>
+)
+data class Content(
+    val parts: List<Part>,
+    val role: String = "user"
+)
+data class Part(
+    val text: String
+)
+data class GeminiResponse(
+    val candidates: List<Candidate>
+)
+data class Candidate(
+    val content: Content
+)
+
+// API
+interface GeminiApi {
+    @Headers("Content-Type: application/json")
+    @POST("v1beta/models/gemini-2.0-flash:generateContent")
+    fun generateContent(
+        @Query("key") apiKey: String,
+        @Body request: GeminiRequest
+    ): Call<GeminiResponse>
 }
