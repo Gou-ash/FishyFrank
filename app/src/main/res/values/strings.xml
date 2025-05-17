@@ -151,4 +151,6 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="title_activity_time_per_app">time_per_app_activity</string>
+    <string name="title_activity_time_pe_app">TimePeAppActivity</string>
 </resources>
