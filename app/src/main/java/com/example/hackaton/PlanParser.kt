@@ -20,10 +20,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 
 @Serializable
-data class PlanEntry(val time: String, val activity: String)
+data class PlanEntry(val time: String, val activity: String, val type: String, val tasktype: String)
 
 fun parsePlan(json: String): List<PlanEntry> {
     val tree = Json.parseToJsonElement(json).jsonObject
@@ -37,21 +38,45 @@ fun DayPlanTimeline(entries: List<PlanEntry>) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState())   // <-- tu
+            .verticalScroll(rememberScrollState())
     ) {
         entries.forEach { entry ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
                         .size(12.dp)
-                        .background(color = Color(0xFF6200EE), shape = CircleShape)
+                        .background(color = Color(0xEE2c3e50), shape = CircleShape)
                 )
                 Spacer(Modifier.width(8.dp))
                 Column {
                     Text(text = entry.time, fontSize = 14.sp, color = Color.Gray)
-                    Text(text = entry.activity, fontSize = 16.sp)
+
+                    if (entry.type=="misc") {
+                        Text(
+                            text = entry.activity, fontSize = 16.sp,
+                            modifier = Modifier.background(
+                                color = Color(0xEE7f8c8d), shape = RoundedCornerShape(4.dp)
+                            ).padding(horizontal = 4.dp, vertical = 2.dp)
+                        )
+                    }else if (entry.type=="user-defined") {
+                        Text(
+                            text = entry.activity, fontSize = 16.sp,
+                            modifier = Modifier.background(
+                                color = Color(0xEEc0392b), shape = RoundedCornerShape(4.dp)
+                            ).padding(horizontal = 4.dp, vertical = 2.dp)
+                        )
+                    }else {
+                        Text(text = entry.tasktype, fontSize = 14.sp, color = Color(0xEE34495e))
+                        Text(
+                            text = entry.activity, fontSize = 16.sp,
+                            modifier = Modifier.background(
+                                color = Color(0xEE27ae60), shape = RoundedCornerShape(4.dp)
+                            ).padding(horizontal = 4.dp, vertical = 2.dp)
+                        )
+                    }
                 }
             }
+
             Spacer(Modifier.height(16.dp))
         }
     }

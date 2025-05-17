@@ -69,6 +69,9 @@ class MainActivity : ComponentActivity() {
 
 
         notification.createNotificationChannel()
+        setContent {
+            GeminiTest(ai)
+        }
     }
 
     // On returning to the app, check if the permission was granted and update usage
