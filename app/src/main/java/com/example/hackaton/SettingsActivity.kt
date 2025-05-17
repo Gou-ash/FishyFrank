@@ -1,36 +1,42 @@
 package com.example.hackaton
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.PreferenceFragmentCompat
+import com.example.hackaton.databinding.SettingsActivityBinding
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var binding: SettingsActivityBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_activity)
-        if (savedInstanceState == null) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.settings, SettingsFragment())
-                .commit()
+
+        binding = SettingsActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val HomeActivityButton = findViewById<ImageButton>(R.id.SetingsHomeButton)
+        HomeActivityButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val ActivitiesActivityButton = findViewById<ImageButton>(R.id.SettingsActivityButton)
+        ActivitiesActivityButton.setOnClickListener {
+            val intent = Intent(this, ScrollingActivity::class.java)
+            startActivity(intent)
+        }
+
+        val SettingsActivityButton = findViewById<ImageButton>(R.id.SetingsSetingsButton)
+        SettingsActivityButton.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
 
 
-    class SettingsFragment : PreferenceFragmentCompat() {
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey)
-        }
-
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-            view.setBackgroundColor(android.graphics.Color.parseColor("#2c245c"))
-        }
-
-    }
 }
