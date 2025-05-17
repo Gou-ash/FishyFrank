@@ -85,7 +85,7 @@ fun GeminiChatScreen(
         OutlinedTextField(
             value = prompt,
             onValueChange = { prompt = it },
-            label = { Text("Opisz co chcesz robić dzisiaj") },
+            label = { Text("Opisz co chcesz dzisiaj robić albo opowiedz mi o sobie!") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -95,7 +95,7 @@ fun GeminiChatScreen(
             onClick = { onSend(prompt) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Wygeneruj plan!")
+            Text("Wygeneruj plan na dziś!")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
