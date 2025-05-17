@@ -17,7 +17,7 @@ class SettingsActivity : AppCompatActivity() {
         binding = SettingsActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val HomeActivityButton = findViewById<ImageButton>(R.id.btn3)
+        val HomeActivityButton = findViewById<ImageButton>(R.id.HomeTimeButton)
         HomeActivityButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
