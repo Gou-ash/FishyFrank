@@ -1,22 +1,28 @@
 package com.example.hackaton
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import retrofit2.Call
 import retrofit2.Callback
@@ -77,31 +83,59 @@ fun GeminiChatScreen(
 ) {
     var prompt by remember { mutableStateOf("") }
 
-    Column(
+    Surface (
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        OutlinedTextField(
-            value = prompt,
-            onValueChange = { prompt = it },
-            label = { Text("Opisz co chcesz dzisiaj robić albo opowiedz mi o sobie!") },
-            modifier = Modifier.fillMaxWidth()
+            .fillMaxSize(),
+        color = Color(0xFF2c245c)
+    ){
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth().padding(bottom = 200.dp),
+            color = Color(0xFF2c245c)
         )
+        {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = prompt,
+                    onValueChange = { prompt = it },
+                    label = { Text("Co dzisiaj na tapecie? Opowiedz mi o swoich planach albo po prostu o sobie.",
+                            modifier = Modifier.background(Color(0xFFbdc3c7)))
+                            },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        disabledContainerColor = Color.White
+                    )
+                )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = { onSend(prompt) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Wygeneruj plan na dziś!")
-        }
+                Button(
+                    onClick = { onSend(prompt) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2c3e50),
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth().padding(15.dp)
+                ) {
+                    Text("Wygeneruj plan na dziś!")
+                }
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-        if (responseText!="") {
-            CreatePlan(stripFences(responseText))
+//                Text(
+//                    text=responseText
+//                )
+
+                if (responseText!="") {
+                    CreatePlan(stripFences(responseText))
+                }
+            }
         }
     }
 }
