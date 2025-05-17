@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.Glide
 import com.example.hackaton.ui.theme.HackatonTheme
 
 class MainActivity : ComponentActivity() {
@@ -49,6 +51,13 @@ class MainActivity : ComponentActivity() {
         }
 
         setContentView(R.layout.main_activity)
+
+        val imageView: ImageView = findViewById(R.id.centerImage)
+        Glide.with(this)
+            .asGif()
+            .load(R.drawable.fishy_frank)
+            .into(imageView)
+
 
         val settingsActivityButton = findViewById<ImageButton>(R.id.TimeSettingsButton)
         settingsActivityButton.setOnClickListener {

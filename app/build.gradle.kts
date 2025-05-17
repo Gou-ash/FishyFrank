@@ -87,5 +87,9 @@ dependencies {
     implementation("androidx.compose.material:material:1.6.5")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.5")
 
+    // GIF
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
 
 }
