@@ -29,43 +29,45 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 // Main ask function
-public fun askGemini(prompt: String, onResponse: (String) -> Unit) {
-    // Build retrofit
-    val retrofit = Retrofit.Builder()
-        .baseUrl("https://generativelanguage.googleapis.com/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+public class Gemini{
+    public fun askGemini(prompt: String, onResponse: (String) -> Unit) {
+        // Build retrofit
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://generativelanguage.googleapis.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
-    // Generate request
-    val api = retrofit.create(GeminiApi::class.java)
-    val request = GeminiRequest(
-        contents = listOf(Content(parts = listOf(Part(text =  GetDayplan(prompt)))))
-    )
+        // Generate request
+        val api = retrofit.create(GeminiApi::class.java)
+        val request = GeminiRequest(
+            contents = listOf(Content(parts = listOf(Part(text =  GetDayplan(prompt)))))
+        )
 
-    // API KEY
-    val apiKey = "AIzaSyBhUnruHaNIMcZgVvoVl3HcUjP5Iou5KLE"
+        // API KEY
+        val apiKey = "AIzaSyBhUnruHaNIMcZgVvoVl3HcUjP5Iou5KLE"
 
-    // Generate response
-    api.generateContent(apiKey, request)
-        .enqueue(object : Callback<GeminiResponse> {
-            override fun onResponse(call: Call<GeminiResponse>, response: Response<GeminiResponse>) {
-                if (!response.isSuccessful) {
-                    val err = response.errorBody()?.string() ?: "Unknown error"
-                    onResponse("Błąd API: $err")
-                    return
+        // Generate response
+        api.generateContent(apiKey, request)
+            .enqueue(object : Callback<GeminiResponse> {
+                override fun onResponse(call: Call<GeminiResponse>, response: Response<GeminiResponse>) {
+                    if (!response.isSuccessful) {
+                        val err = response.errorBody()?.string() ?: "Unknown error"
+                        onResponse("Błąd API: $err")
+                        return
+                    }
+                    val reply = response.body()?.candidates
+                        ?.firstOrNull()?.content?.parts
+                        ?.firstOrNull()?.text
+                    onResponse(reply ?: "Brak treści w odpowiedzi")
                 }
-                val reply = response.body()?.candidates
-                    ?.firstOrNull()?.content?.parts
-                    ?.firstOrNull()?.text
-                onResponse(reply ?: "Brak treści w odpowiedzi")
-            }
 
-            override fun onFailure(call: Call<GeminiResponse>, t: Throwable) {
-                onResponse("Network error: ${t.message}")
-            }
-        })
+                override fun onFailure(call: Call<GeminiResponse>, t: Throwable) {
+                    onResponse("Network error: ${t.message}")
+                }
+            })
+    }
+
 }
-
 
 //COMPOSABLE
 @Composable
@@ -98,20 +100,20 @@ fun GeminiChatScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (responseText!="Odpowiedź pojawi się tutaj") {
+        if (responseText!="") {
             CreatePlan(stripFences(responseText))
         }
     }
 }
 @Composable
-fun GeminiTest() {
-    var responseText by remember { mutableStateOf("Odpowiedź pojawi się tutaj") }
+fun GeminiTest(ai:Gemini) {
+    var responseText by remember { mutableStateOf("") }
 
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             GeminiChatScreen(
                 onSend = { prompt ->
-                    askGemini(prompt) { reply ->
+                    ai.askGemini(prompt) { reply ->
                         responseText = reply
                     }
                 },
@@ -157,4 +159,58 @@ interface GeminiApi {
         @Query("key") apiKey: String,
         @Body request: GeminiRequest
     ): Call<GeminiResponse>
+}
+
+// PROMPTS
+public fun GetDayplan(tasks: String): String {
+    val head = """
+            Jesteś asystentem pomagającym w planowaniu. 
+            Miej w uwadzę to że pomagasz użytkownikowi ze zdrowiem psychicznym i 
+            we walce z nadmiernym screen timem.
+            Miej na uwadzę poprzednie zapytania, i poprzedni przeslany przez ciebie plan.
+            Nazwa obiektu to SOBOTA.
+            Każdy wpis ma mieć pola:
+              - "time": godzina w formacie HH:mm (w zakresie 00:00–23:59),
+              - "activity": krótki opis zadania.
+            Zadania do uwzględnienia: $tasks
+            Rozmieść zadania w logicznych godzinach (np. od 07:00 do 22:00 co godzine).
+            Odpowiedz **TYLKO** czystym JSON-em, bez żadnego tekstu dodatkowego.
+            Upewnij się, że JSON jest poprawny składniowo.
+            
+            Format przykład:
+            {
+              "Monday": [
+                { "time": "07:00", "activity": "Poranna gimnastyka" },
+                { "time": "08:00", "activity": "Śniadanie" },
+                { "time": "10:00", "activity": "Spotkanie zespołu" }
+              ]
+            }
+        """
+
+    return head
+}
+
+
+object Prompts {
+    const val HEAD_NORMAL = """
+        Jesteś Kreskówkowym Kotem, który pomaga dbać o zdrowie psychiczne. 
+        Odpowiadaj w pierszej osobie imersyjnie i wesoło.
+        Zapytanie urzytkownika: 
+        """
+
+    const val HEAD_ACTIVE = """
+        Jesteś Kreskówkowym Kotem, który pomaga dbać o zdrowie psychiczne. 
+        Odpowiadaj w pierszej osobie imersyjnie i wesoło.
+        Zaproponuj mu krótką aktywnoś (np. rozciąganie, oddech, krótki spacer),
+        z humorem i pozytywną energią od Kotka.
+    """
+
+    const val HEAD_PLAN = """
+        Jesteś asystentem pomagającym w planowaniu. 
+        Proszę wygeneruj plan dnia zawierajacy tylko podane rzeczy na poniedziałek w formacie JSON. 
+        Każdy wpis ma mieć pola:
+          - "time": godzina w formacie HH:mm,
+          - "activity": krótki opis zadania.
+        Odpowiedz **TYLKO** czystym JSON-em, bez żadnego tekstu dodatkowego.
+    """
 }

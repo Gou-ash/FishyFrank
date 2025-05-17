@@ -30,6 +30,7 @@ import com.example.hackaton.ui.theme.HackatonTheme
 class MainActivity : ComponentActivity() {
 
     private val notification = Notification(this)
+    private val ai = Gemini()
 
     // Place state here so it survives recompositions and can be updated in onResume()
     private var usagePermissionGranted by mutableStateOf(false)
