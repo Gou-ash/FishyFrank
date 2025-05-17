@@ -10,45 +10,10 @@
     tools:layout_editor_absoluteX="4dp"
     tools:layout_editor_absoluteY="0dp">
 
-    <EditText
-        android:id="@+id/ActivitiesText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="27dp"
-        android:layout_marginTop="18dp"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Aktywności do zrobienia:"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <CheckBox
-        android:id="@+id/checkBox1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:padding="12dp"
-        android:text="Spacer"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ActivitiesText" />
-
-    <CheckBox
-        android:id="@+id/checkBox2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:text="Zagrać w Tenis"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox1" />
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/composeView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 
     <ImageButton
@@ -56,7 +21,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="20dp"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 1"
         android:scaleType="centerInside"
@@ -66,45 +31,47 @@
         app:tint="#FFFFFF" />
 
     <ImageButton
+        android:id="@+id/ActivitiesSettingsButton"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/round_button_background"
+        android:contentDescription="Button 4"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_settings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="#FFFFFF" />
+
+    <ImageButton
         android:id="@+id/btn3"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginStart="52dp"
-        android:layout_marginBottom="70dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 3"
         android:scaleType="centerInside"
         android:src="@drawable/ic_sleep"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn2"
         app:tint="#FFFFFF" />
 
     <ImageButton
         android:id="@+id/btn2"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginStart="21dp"
-        android:layout_marginBottom="70dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 2"
         android:scaleType="centerInside"
         android:src="@drawable/ic_water"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn3"
+        app:layout_constraintStart_toEndOf="@+id/BackToMainButton"
         app:tint="#FFFFFF" />
 
-    <ImageButton
-        android:id="@+id/ActivitiesSettingsButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="23dp"
-        android:layout_marginBottom="70dp"
-        android:background="@drawable/round_button_background"
-        android:contentDescription="Button 4"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_settings"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn2"
-        app:tint="#FFFFFF" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
