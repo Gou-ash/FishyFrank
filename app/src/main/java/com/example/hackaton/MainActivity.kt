@@ -10,6 +10,8 @@ import android.os.Binder
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -48,43 +50,14 @@ class MainActivity : ComponentActivity() {
             tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
         }
 
-        setContent {
-            HackatonTheme {
-                var notificationRequested by remember { mutableStateOf(false) }
+        setContentView(R.layout.main_activity)
 
-                // Compose will recompose when usagePermissionGranted or tiktokMinutes changes
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    GreetingWithButtonAndUsage(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding),
-                        onNotifyClick = {
-                            notificationRequested = true
-                        },
-                        onRequestUsagePermission = {
-                            launchUsageAccessSettings()
-                        },
-                        usagePermissionGranted = usagePermissionGranted,
-                        tiktokMinutes = tiktokMinutes
-                    )
-                }
-                // React to notification button press
-                if (notificationRequested) {
-                    notificationRequested = false
-                    if (ActivityCompat.checkSelfPermission(
-                            this,
-                            android.Manifest.permission.POST_NOTIFICATIONS
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                    } else {
-                        notification.showNotification(
-                            tiktokMinutes.takeIf { it >= 0 } ?: 15,
-                            "TikTok"
-                        )
-                    }
-                }
-            }
+        val settingsActivityButton = findViewById<Button>(R.id.settingsActivityButton)
+        settingsActivityButton.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
         }
+
         notification.createNotificationChannel()
     }
 
@@ -163,56 +136,58 @@ class MainActivity : ComponentActivity() {
             ).show()
         }
     }
-}
 
-@Composable
-fun GreetingWithButtonAndUsage(
-    name: String,
-    modifier: Modifier = Modifier,
-    onNotifyClick: () -> Unit,
-    onRequestUsagePermission: () -> Unit,
-    usagePermissionGranted: Boolean,
-    tiktokMinutes: Int
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
+
+    @Composable
+    fun GreetingWithButtonAndUsage(
+        name: String,
+        modifier: Modifier = Modifier,
+        onNotifyClick: () -> Unit,
+        onRequestUsagePermission: () -> Unit,
+        usagePermissionGranted: Boolean,
+        tiktokMinutes: Int
     ) {
-        Text(
-            text = "Hello $name!",
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        Button(onClick = onNotifyClick) {
-            Text("Send Notification")
-        }
-        Spacer(Modifier.height(24.dp))
-        if (!usagePermissionGranted) {
-            Text("Usage access permission is required to show TikTok usage time.")
-            Button(onClick = onRequestUsagePermission) {
-                Text("Grant Usage Access")
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Hello $name!",
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Button(onClick = onNotifyClick) {
+                Text("Send Notification")
             }
-        } else {
-            if (tiktokMinutes >= 0) {
-                Text("Time spent in TikTok in last 24h: $tiktokMinutes minutes")
+            Spacer(Modifier.height(24.dp))
+            if (!usagePermissionGranted) {
+                Text("Usage access permission is required to show TikTok usage time.")
+                Button(onClick = onRequestUsagePermission) {
+                    Text("Grant Usage Access")
+                }
             } else {
-                Text("Loading TikTok usage...")
+                if (tiktokMinutes >= 0) {
+                    Text("Time spent in TikTok in last 24h: $tiktokMinutes minutes")
+                } else {
+                    Text("Loading TikTok usage...")
+                }
             }
+        }
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun GreetingWithButtonAndUsagePreview() {
+        HackatonTheme {
+            GreetingWithButtonAndUsage(
+                name = "Android",
+                onNotifyClick = {},
+                onRequestUsagePermission = {},
+                usagePermissionGranted = false,
+                tiktokMinutes = -1
+            )
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingWithButtonAndUsagePreview() {
-    HackatonTheme {
-        GreetingWithButtonAndUsage(
-            name = "Android",
-            onNotifyClick = {},
-            onRequestUsagePermission = {},
-            usagePermissionGranted = false,
-            tiktokMinutes = -1
-        )
-    }
-}
