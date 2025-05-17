@@ -1,6 +1,8 @@
 package com.example.hackaton
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -17,12 +19,22 @@ class ScrollingActivity : AppCompatActivity() {
         binding = ActivityScrollingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(findViewById(R.id.toolbar))
-        binding.toolbarLayout.title = title
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+        val HomeActivityButton = findViewById<Button>(R.id.BackToMainButton)
+        HomeActivityButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+        val ActivitiesActivityButton = findViewById<Button>(R.id.ActivitiesActivitiesButton)
+        ActivitiesActivityButton.setOnClickListener {
+            val intent = Intent(this, ScrollingActivity::class.java)
+            startActivity(intent)
+        }
+
+        val SettingsActivityButton = findViewById<Button>(R.id.ActivitiesSettingsButton)
+        SettingsActivityButton.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
         }
     }
 }
