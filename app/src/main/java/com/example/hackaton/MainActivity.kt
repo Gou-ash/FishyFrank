@@ -58,6 +58,12 @@ class MainActivity : ComponentActivity() {
             startActivity(intent)
         }
 
+        val rightActivityButton = findViewById<Button>(R.id.rightActivity)
+        rightActivityButton.setOnClickListener {
+            val intent = Intent(this, ScrollingActivity::class.java)
+            startActivity(intent)
+        }
+
         notification.createNotificationChannel()
     }
 
