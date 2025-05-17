@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="#2c245c"
-    tools:context=".ScrollingActivity">
+    android:fitsSystemWindows="true"
+    tools:context=".ScrollingActivity"
+    tools:layout_editor_absoluteX="4dp"
+    tools:layout_editor_absoluteY="0dp">
 
     <EditText
         android:id="@+id/ActivitiesText"
@@ -29,12 +30,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:text="Spacer"
-        android:textSize="18sp"
         android:padding="12dp"
+        android:text="Spacer"
         android:textColor="#FFFFFF"
-        app:layout_constraintTop_toBottomOf="@+id/ActivitiesText"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ActivitiesText" />
 
     <CheckBox
         android:id="@+id/checkBox2"
@@ -42,14 +43,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
-        android:text="Zagrać w Tenis"
-        android:textSize="18sp"
         android:padding="12dp"
+        android:text="Zagrać w Tenis"
         android:textColor="#FFFFFF"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox1"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox1" />
 
 
     <ImageButton
@@ -57,7 +56,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="68dp"
-        android:layout_marginBottom="96dp"
+        android:layout_marginBottom="80dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 1"
         android:scaleType="centerInside"
@@ -71,7 +70,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="96dp"
+        android:layout_marginBottom="80dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 4"
         android:scaleType="centerInside"
@@ -85,11 +84,11 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="12dp"
-        android:layout_marginBottom="96dp"
+        android:layout_marginBottom="80dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 3"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_sport"
+        android:src="@drawable/ic_sleep"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn2"
         app:tint="#FFFFFF" />
@@ -99,7 +98,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="20dp"
-        android:layout_marginBottom="96dp"
+        android:layout_marginBottom="80dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 2"
         android:scaleType="centerInside"
