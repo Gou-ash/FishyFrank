@@ -1,113 +1,193 @@
 package com.example.hackaton
 
-import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.AppOpsManager
+import android.app.usage.UsageStats
+import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Binder
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.example.hackaton.ui.theme.HackatonTheme
 
+class MainActivity : ComponentActivity() {
 
-    class MainActivity : ComponentActivity() {
-        val CHANNEL_ID = "ch1"
-        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            enableEdgeToEdge()
-            setContent {
-                HackatonTheme {
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        greeting(
-                            name = "Android",
-                            modifier = Modifier.padding(innerPadding)
-                        )
-                    }
-                }
-            }
-            createNotificationChannel()
-            if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                return
-            } else {
-                showNotification()
-            }
-        }
-        private val notificationPermissionLauncher =registerForActivityResult(
-            ActivityResultContracts
-                .RequestPermission()) { isGranted ->
-            if(isGranted) {
-                    showNotification()
-            }else{
-                Toast.makeText(
-                    applicationContext, "Permission denied",
-                    Toast.LENGTH_LONG).show()
-            }
+    private val notification = Notification(this)
+
+    // Place state here so it survives recompositions and can be updated in onResume()
+    private var usagePermissionGranted by mutableStateOf(false)
+    private var tiktokMinutes by mutableStateOf(-1)
+    private var askedUsageAccessThisSession = false
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
+        // Initial permission check
+        usagePermissionGranted = hasUsageStatsPermission()
+        if (!usagePermissionGranted && !askedUsageAccessThisSession) {
+            askedUsageAccessThisSession = true
+            launchUsageAccessSettings()
+        } else if (usagePermissionGranted) {
+            tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
         }
 
-        @SuppressLint("MissingPermission")
-        private fun showNotification(){
-            var builder = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle("test")
-                .setContentText("test2")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            with(NotificationManagerCompat.from(this)) {
+        setContentView(R.layout.main_activity)
 
-
-                // notificationId is a unique int for each notification that you must define.
-                notify(1, builder.build())
-            }
+        val settingsActivityButton = findViewById<Button>(R.id.settingsActivityButton)
+        settingsActivityButton.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
         }
-        private fun createNotificationChannel() {
-            // Create the NotificationChannel, but only on API 26+ because
-            // the NotificationChannel class is not in the Support Library.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = "KANAŁ"
-                val descriptionText = "OPIS"
-                val importance = NotificationManager.IMPORTANCE_DEFAULT
-                val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                    description = descriptionText
-                }
-                // Register the channel with the system.
-                val notificationManager: NotificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(channel)
+
+        notification.createNotificationChannel()
+    }
+
+    // On returning to the app, check if the permission was granted and update usage
+    override fun onResume() {
+        super.onResume()
+        val permissionNow = hasUsageStatsPermission()
+        if (permissionNow != usagePermissionGranted) {
+            usagePermissionGranted = permissionNow
+            if (permissionNow) {
+                tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
             }
+        } else if (permissionNow) {
+            // Always refresh usage
+            tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
         }
     }
 
+    /** Checks if Usage Stats permission is granted */
+    private fun hasUsageStatsPermission(): Boolean {
+        val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            appOps.unsafeCheckOpNoThrow(
+                AppOpsManager.OPSTR_GET_USAGE_STATS,
+                applicationInfo.uid,
+                packageName
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            appOps.checkOpNoThrow(
+                AppOpsManager.OPSTR_GET_USAGE_STATS,
+                Binder.getCallingUid(),
+                packageName
+            )
+        }
+        return mode == AppOpsManager.MODE_ALLOWED
+    }
+
+    /** Launches the Usage Access Settings screen */
+    private fun launchUsageAccessSettings() {
+        try {
+            startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+        } catch (e: Exception) {
+            Toast.makeText(
+                this,
+                "Cannot open Usage Access Settings. Please grant permission manually.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    /** Returns minutes spent in a given app in the last 24 hours */
+    private fun getAppUsageMinutes(appPackage: String): Int {
+        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val endTime = System.currentTimeMillis()
+        val startTime = endTime - 1000L * 60 * 60 * 24 // 24 hours ago
+        val stats: List<UsageStats> =
+            usageStatsManager.queryUsageStats(
+                UsageStatsManager.INTERVAL_DAILY,
+                startTime,
+                endTime
+            )
+        val usage = stats.find { it.packageName == appPackage }
+        return if (usage != null) (usage.totalTimeInForeground / 60000).toInt() else 0
+    }
+
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            notification.showNotification(15, "TikTok")
+        } else {
+            Toast.makeText(
+                applicationContext, "Permission denied",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+
     @Composable
-    fun greeting(name: String, modifier: Modifier = Modifier) {
-        Text(
-            text = "Hello $name!",
+    fun GreetingWithButtonAndUsage(
+        name: String,
+        modifier: Modifier = Modifier,
+        onNotifyClick: () -> Unit,
+        onRequestUsagePermission: () -> Unit,
+        usagePermissionGranted: Boolean,
+        tiktokMinutes: Int
+    ) {
+        Column(
             modifier = modifier
-        )
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Hello $name!",
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Button(onClick = onNotifyClick) {
+                Text("Send Notification")
+            }
+            Spacer(Modifier.height(24.dp))
+            if (!usagePermissionGranted) {
+                Text("Usage access permission is required to show TikTok usage time.")
+                Button(onClick = onRequestUsagePermission) {
+                    Text("Grant Usage Access")
+                }
+            } else {
+                if (tiktokMinutes >= 0) {
+                    Text("Time spent in TikTok in last 24h: $tiktokMinutes minutes")
+                } else {
+                    Text("Loading TikTok usage...")
+                }
+            }
+        }
     }
 
     @Preview(showBackground = true)
     @Composable
-    fun GreetingPreview() {
+    fun GreetingWithButtonAndUsagePreview() {
         HackatonTheme {
-            greeting("Android")
+            GreetingWithButtonAndUsage(
+                name = "Android",
+                onNotifyClick = {},
+                onRequestUsagePermission = {},
+                usagePermissionGranted = false,
+                tiktokMinutes = -1
+            )
         }
     }
+}
+
