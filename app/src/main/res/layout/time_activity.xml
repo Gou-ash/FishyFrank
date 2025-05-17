@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2c245c"
+    tools:context=".MainActivity"
+    tools:ignore="ExtraText"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="-80dp">
+
+
+
+
+    <!-- 4 round icon buttons -->
+
+    <ImageButton
+        android:id="@+id/HomeTimeButton"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/round_button_background"
+        android:contentDescription="Button 1"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="#FFFFFF" />
+
+    <ImageButton
+        android:id="@+id/rightActivity"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/round_button_background"
+        android:contentDescription="Button 4"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_sport"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/TimeSettingsButton"
+        app:tint="#FFFFFF" />
+
+    <ImageButton
+        android:id="@+id/TimeSettingsButton"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/round_button_background"
+        android:contentDescription="Button 3"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_settings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn2"
+        app:tint="#FFFFFF" />
+
+    <ImageButton
+        android:id="@+id/btn2"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/round_button_background"
+        android:contentDescription="Button 2"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_water"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/HomeTimeButton"
+        app:tint="#FFFFFF" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

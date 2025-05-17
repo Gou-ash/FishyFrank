@@ -1,21 +1,15 @@
 package com.example.hackaton
 
 import android.app.AppOpsManager
-import android.app.usage.UsageStats
-import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -25,10 +19,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import com.example.hackaton.ui.theme.HackatonTheme
 
 class MainActivity : ComponentActivity() {
+
 
     private val notification = Notification(this)
 
@@ -36,24 +30,27 @@ class MainActivity : ComponentActivity() {
     private var usagePermissionGranted by mutableStateOf(false)
     private var tiktokMinutes by mutableStateOf(-1)
     private var askedUsageAccessThisSession = false
+    val appUsageTimeManager = AppUsageTimeManager(this)
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+
+
+
         // Initial permission check
         usagePermissionGranted = hasUsageStatsPermission()
         if (!usagePermissionGranted && !askedUsageAccessThisSession) {
             askedUsageAccessThisSession = true
             launchUsageAccessSettings()
-        } else if (usagePermissionGranted) {
-            tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
         }
 
         setContentView(R.layout.main_activity)
 
-        val settingsActivityButton = findViewById<ImageButton>(R.id.settingsActivityButton)
+        val settingsActivityButton = findViewById<ImageButton>(R.id.TimeSettingsButton)
         settingsActivityButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
@@ -64,6 +61,18 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this, ScrollingActivity::class.java)
             startActivity(intent)
         }
+
+        val leftActivityButton = findViewById<ImageButton>(R.id.HomeTimeButton)
+        leftActivityButton.setOnClickListener {
+            val intent = Intent(this, time_per_app_activity::class.java)
+            startActivity(intent)
+        }
+
+//        val homeTimeButton = findViewById<ImageButton>(R.id.HomeTimeButton)
+//        homeTimeButton.setOnClickListener {
+//            val intent = Intent(this, TimeActivity::class.java)
+//            startActivity(intent)
+//        }
 
 
 
@@ -77,11 +86,12 @@ class MainActivity : ComponentActivity() {
         if (permissionNow != usagePermissionGranted) {
             usagePermissionGranted = permissionNow
             if (permissionNow) {
-                tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
+                tiktokMinutes = appUsageTimeManager.getAppUsageMinutes("com.zhiliaoapp.musically")
             }
         } else if (permissionNow) {
-            // Always refresh usage
-            tiktokMinutes = getAppUsageMinutes("com.zhiliaoapp.musically")
+
+            tiktokMinutes = appUsageTimeManager.getAppUsageMinutes("com.zhiliaoapp.musically")
+
         }
     }
 
@@ -116,21 +126,6 @@ class MainActivity : ComponentActivity() {
                 Toast.LENGTH_LONG
             ).show()
         }
-    }
-
-    /** Returns minutes spent in a given app in the last 24 hours */
-    private fun getAppUsageMinutes(appPackage: String): Int {
-        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val endTime = System.currentTimeMillis()
-        val startTime = endTime - 1000L * 60 * 60 * 24 // 24 hours ago
-        val stats: List<UsageStats> =
-            usageStatsManager.queryUsageStats(
-                UsageStatsManager.INTERVAL_DAILY,
-                startTime,
-                endTime
-            )
-        val usage = stats.find { it.packageName == appPackage }
-        return if (usage != null) (usage.totalTimeInForeground / 60000).toInt() else 0
     }
 
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -199,4 +194,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

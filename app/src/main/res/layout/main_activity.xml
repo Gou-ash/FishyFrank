@@ -30,7 +30,7 @@
     <!-- 4 round icon buttons -->
 
     <ImageButton
-        android:id="@+id/btn1"
+        android:id="@+id/HomeTimeButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="68dp"
@@ -54,11 +54,11 @@
         android:scaleType="centerInside"
         android:src="@drawable/ic_sport"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/settingsActivityButton"
+        app:layout_constraintStart_toEndOf="@+id/TimeSettingsButton"
         app:tint="#FFFFFF" />
 
     <ImageButton
-        android:id="@+id/settingsActivityButton"
+        android:id="@+id/TimeSettingsButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="12dp"
@@ -82,7 +82,7 @@
         android:scaleType="centerInside"
         android:src="@drawable/ic_water"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btn1"
+        app:layout_constraintStart_toEndOf="@id/HomeTimeButton"
         app:tint="#FFFFFF" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
