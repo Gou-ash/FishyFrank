@@ -3,20 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#b84a62ff">
+    android:background="#2c245c">
 
 
     <ImageButton
         android:id="@+id/SetingsHomeButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginStart="208dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 1"
         android:scaleType="centerInside"
         android:src="@drawable/ic_home"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/SettingsActivityButton"
         app:layout_constraintStart_toStartOf="parent"
         app:tint="#FFFFFF" />
 
@@ -24,8 +26,8 @@
         android:id="@+id/SettingsActivityButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginEnd="53dp"
-        android:layout_marginBottom="27dp"
+        android:layout_marginEnd="68dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 3"
         android:scaleType="centerInside"
@@ -38,12 +40,12 @@
         android:id="@+id/settingsActivityButton4"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 3"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_water"
+        android:src="@drawable/ic_sleep"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/SetingsSetingsButton"
         app:tint="#FFFFFF" />
@@ -52,14 +54,14 @@
         android:id="@+id/SetingsSetingsButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="27dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 3"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_settings"
+        android:src="@drawable/ic_water"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/SettingsActivityButton"
+        app:layout_constraintEnd_toStartOf="@+id/SetingsHomeButton"
         app:tint="#FFFFFF" />
 
     <Button
