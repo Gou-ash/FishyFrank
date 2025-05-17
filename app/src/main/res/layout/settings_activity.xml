@@ -70,7 +70,8 @@
         android:layout_height="56dp"
         android:layout_marginStart="43dp"
         android:layout_marginTop="55dp"
-        android:text="Manage Notifications"
+        android:text="Zarządzaj Powiadomieniami"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -80,7 +81,8 @@
         android:layout_height="61dp"
         android:layout_marginStart="46dp"
         android:layout_marginTop="42dp"
-        android:text="Desired Activities"
+        android:text="Preferowane Aktywności"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button7" />
 
@@ -90,7 +92,8 @@
         android:layout_height="61dp"
         android:layout_marginStart="46dp"
         android:layout_marginTop="37dp"
-        android:text="Tracked Apps"
+        android:text="Śledzone Aplikacje"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button8" />
 

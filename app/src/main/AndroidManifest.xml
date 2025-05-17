@@ -12,20 +12,12 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/freaky_frank"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/freaky_frank"
         android:supportsRtl="true"
         android:theme="@style/Theme.Hackaton"
         tools:targetApi="31">
-        <activity
-            android:name=".TimePeAppActivity"
-            android:exported="false"
-            android:label="@string/title_activity_time_pe_app" />
-        <activity
-            android:name=".TimePerAppActivity"
-            android:exported="false"
-            android:label="@string/title_activity_time_per_app" />
         <activity
             android:name=".time_per_app_activity"
             android:exported="false"

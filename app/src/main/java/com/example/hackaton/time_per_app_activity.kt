@@ -44,6 +44,7 @@ class time_per_app_activity : AppCompatActivity() {
         TimeLabel3.text = appUsageTimeManager.getAppUsageMinutes("com.facebook.katana").toString()
         val TImeLabel1 = findViewById<TextView>(R.id.textViewAppName)
         TImeLabel1.text = "TikTok"
+
     }
 
 }
