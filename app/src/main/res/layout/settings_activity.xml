@@ -7,59 +7,61 @@
 
 
     <ImageButton
-        android:id="@+id/SettingsActivityButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="26dp"
-        android:layout_marginBottom="69dp"
-        android:background="@drawable/round_button_background"
-        android:contentDescription="Button 3"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_sport"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/SetingsHomeButton"
-        app:tint="#FFFFFF" />
-
-    <ImageButton
         android:id="@+id/SetingsHomeButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="69dp"
+        android:layout_marginStart="208dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 1"
         android:scaleType="centerInside"
         android:src="@drawable/ic_home"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/settingsActivityButton4"
+        app:layout_constraintEnd_toStartOf="@+id/SettingsActivityButton"
+        app:layout_constraintStart_toStartOf="parent"
         app:tint="#FFFFFF" />
 
     <ImageButton
-        android:id="@+id/SetingsSetingsButton"
+        android:id="@+id/SettingsActivityButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginStart="46dp"
-        android:layout_marginBottom="69dp"
+        android:layout_marginEnd="68dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 3"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_sleep"
+        android:src="@drawable/ic_sport"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:tint="#FFFFFF" />
 
     <ImageButton
         android:id="@+id/settingsActivityButton4"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginBottom="69dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/round_button_background"
+        android:contentDescription="Button 3"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_sleep"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/SetingsSetingsButton"
+        app:tint="#FFFFFF" />
+
+    <ImageButton
+        android:id="@+id/SetingsSetingsButton"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/round_button_background"
         android:contentDescription="Button 3"
         android:scaleType="centerInside"
         android:src="@drawable/ic_water"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/SetingsSetingsButton"
+        app:layout_constraintEnd_toStartOf="@+id/SetingsHomeButton"
         app:tint="#FFFFFF" />
 
     <Button
