@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -49,11 +50,39 @@ class MainActivity : ComponentActivity() {
     // Persistent step tracking variables
     private var lastSensorValue by mutableStateOf(0L)
     private var totalSteps by mutableStateOf(0L)
+    private var activityRecognitionPermissionGranted by mutableStateOf(false)
+
+    private val activityRecognitionPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        activityRecognitionPermissionGranted = isGranted
+        if (!isGranted) {
+            Toast.makeText(
+                applicationContext,
+                "Activity Recognition permission denied. Step counting won't work.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Check activity recognition permission at startup (Android 10+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            activityRecognitionPermissionGranted = ActivityCompat.checkSelfPermission(
+                this, android.Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!activityRecognitionPermissionGranted) {
+                // Show dialog or popup to request permission
+                activityRecognitionPermissionLauncher.launch(android.Manifest.permission.ACTIVITY_RECOGNITION)
+            }
+        } else {
+            activityRecognitionPermissionGranted = true
+        }
 
         stepCounter = StepCounter(this)
         stepStorage = StepStorage(this)
@@ -75,6 +104,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             var notificationRequested by remember { mutableStateOf(false) }
             var stepsState by remember { mutableStateOf(totalSteps) }
+            val context = LocalContext.current
 
             // Real-time step listening with persistent session logic
             DisposableEffect(Unit) {
@@ -123,6 +153,17 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
+            // Show popup button if activity recognition permission not granted
+            if (!activityRecognitionPermissionGranted) {
+                ActivityRecognitionPermissionPopup(
+                    onRequestPermission = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            activityRecognitionPermissionLauncher.launch(android.Manifest.permission.ACTIVITY_RECOGNITION)
+                        }
+                    }
+                )
+            }
+
             if (notificationRequested) {
                 notificationRequested = false
                 if (ActivityCompat.checkSelfPermission(
@@ -159,6 +200,14 @@ class MainActivity : ComponentActivity() {
         } else if (permissionNow) {
             trackedAppMinutes = appUsageTimeManager.getAppUsageMinutes(trackedApp.packageName)
         }
+        // Update activity recognition permission state on resume
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            activityRecognitionPermissionGranted = ActivityCompat.checkSelfPermission(
+                this, android.Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            activityRecognitionPermissionGranted = true
+        }
     }
 
     private fun launchUsageAccessSettings() {
@@ -185,6 +234,25 @@ class MainActivity : ComponentActivity() {
             ).show()
         }
     }
+}
+
+// --- UI: ActivityRecognitionPermissionPopup ---
+@Composable
+fun ActivityRecognitionPermissionPopup(
+    onRequestPermission: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { /* Prevent dismiss */ },
+        title = { Text("Activity Recognition Permission Needed") },
+        text = {
+            Text("This app needs Activity Recognition permission to count your steps. Please enable it.")
+        },
+        confirmButton = {
+            Button(onClick = onRequestPermission) {
+                Text("Grant Permission")
+            }
+        }
+    )
 }
 
 // --- UI: GreetingWithButtonAndUsage ---
