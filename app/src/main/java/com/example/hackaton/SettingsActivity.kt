@@ -17,7 +17,7 @@ class SettingsActivity : AppCompatActivity() {
         binding = SettingsActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val HomeActivityButton = findViewById<ImageButton>(R.id.SetingsHomeButton)
+        val HomeActivityButton = findViewById<ImageButton>(R.id.btn3)
         HomeActivityButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -27,7 +27,7 @@ class SettingsActivity : AppCompatActivity() {
         ActivitiesActivityButton.setOnClickListener {
             val intent = Intent(this, ScrollingActivity::class.java)
             startActivity(intent)
-        }
+   3     }
 
         val SettingsActivityButton = findViewById<ImageButton>(R.id.SetingsSetingsButton)
         SettingsActivityButton.setOnClickListener {

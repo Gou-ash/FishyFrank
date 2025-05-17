@@ -16,10 +16,6 @@ class ScrollingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityScrollingBinding
     private val ai = Gemini()
 
-    public fun goBack(){
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,13 +23,13 @@ class ScrollingActivity : AppCompatActivity() {
         binding = ActivityScrollingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val HomeActivityButton = findViewById<ImageButton>(R.id.BackToMainButton)
+        val HomeActivityButton = findViewById<ImageButton>(R.id.btn3)
         HomeActivityButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
 
-        val SettingsActivityButton = findViewById<ImageButton>(R.id.ActivitiesSettingsButton)
+        val SettingsActivityButton = findViewById<ImageButton>(R.id.btn2)
         SettingsActivityButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
