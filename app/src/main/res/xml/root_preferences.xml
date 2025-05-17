@@ -1,23 +1,25 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="Preferences">
+    <PreferenceCategory app:title="Personalizacja">
 
-        <!-- Custom preference that will show a dialog/popup -->
         <Preference
             app:key="buttonTracked"
-            app:title="Tracked Aplications"
-            app:summary="Click to show options" />
+            app:layout="@layout/preference_redpink"
+            app:summary="Click to show options"
+            app:title="Tracked Applications" />
 
         <Preference
             app:key="buttonActivities"
-            app:title="Desired Activities"
-            app:summary="Click to show options" />
+            app:layout="@layout/preference_redpink"
+            app:summary="Click to show options"
+            app:title="Desired Activities" />
 
         <Preference
             app:key="buttonNotifications"
-            app:title="Manage Notifications"
-            app:summary="Click to show options" />
+            app:layout="@layout/preference_redpink"
+            app:summary="Click to show options"
+            app:title="Manage Notifications" />
 
     </PreferenceCategory>
-
 </PreferenceScreen>
