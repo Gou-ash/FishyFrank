@@ -45,7 +45,7 @@ fun DayPlanTimeline(entries: List<PlanEntry>) {
                 Box(
                     modifier = Modifier
                         .size(12.dp)
-                        .background(color = Color(0xFF6200EE), shape = CircleShape)
+                        .background(color = Color(0xEE2c3e50), shape = CircleShape)
                 )
                 Spacer(Modifier.width(8.dp))
                 Column {
@@ -55,22 +55,22 @@ fun DayPlanTimeline(entries: List<PlanEntry>) {
                         Text(
                             text = entry.activity, fontSize = 16.sp,
                             modifier = Modifier.background(
-                                color = Color.LightGray, shape = RoundedCornerShape(4.dp)
+                                color = Color(0xEE7f8c8d), shape = RoundedCornerShape(4.dp)
                             ).padding(horizontal = 4.dp, vertical = 2.dp)
                         )
                     }else if (entry.type=="user-defined") {
                         Text(
                             text = entry.activity, fontSize = 16.sp,
                             modifier = Modifier.background(
-                                color = Color.Magenta, shape = RoundedCornerShape(4.dp)
+                                color = Color(0xEEc0392b), shape = RoundedCornerShape(4.dp)
                             ).padding(horizontal = 4.dp, vertical = 2.dp)
                         )
                     }else {
-                        Text(text = entry.tasktype, fontSize = 14.sp, color = Color.Gray)
+                        Text(text = entry.tasktype, fontSize = 14.sp, color = Color(0xEE34495e))
                         Text(
                             text = entry.activity, fontSize = 16.sp,
                             modifier = Modifier.background(
-                                color = Color.Green, shape = RoundedCornerShape(4.dp)
+                                color = Color(0xEE27ae60), shape = RoundedCornerShape(4.dp)
                             ).padding(horizontal = 4.dp, vertical = 2.dp)
                         )
                     }
