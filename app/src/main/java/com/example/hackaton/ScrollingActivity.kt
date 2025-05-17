@@ -3,6 +3,7 @@ package com.example.hackaton
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -19,19 +20,13 @@ class ScrollingActivity : AppCompatActivity() {
         binding = ActivityScrollingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val HomeActivityButton = findViewById<Button>(R.id.BackToMainButton)
+        val HomeActivityButton = findViewById<ImageButton>(R.id.BackToMainButton)
         HomeActivityButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
 
-        val ActivitiesActivityButton = findViewById<Button>(R.id.ActivitiesActivitiesButton)
-        ActivitiesActivityButton.setOnClickListener {
-            val intent = Intent(this, ScrollingActivity::class.java)
-            startActivity(intent)
-        }
-
-        val SettingsActivityButton = findViewById<Button>(R.id.ActivitiesSettingsButton)
+        val SettingsActivityButton = findViewById<ImageButton>(R.id.ActivitiesSettingsButton)
         SettingsActivityButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
