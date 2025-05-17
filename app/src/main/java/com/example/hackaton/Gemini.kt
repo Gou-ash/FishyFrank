@@ -170,8 +170,20 @@ public fun GetDayplan(tasks: String): String {
             Miej na uwadzę poprzednie zapytania, i poprzedni przeslany przez ciebie plan.
             Nazwa obiektu to SOBOTA.
             Każdy wpis ma mieć pola:
-              - "time": godzina w formacie HH:mm (w zakresie 00:00–23:59),
+              - "time": godzina w formacie od HH:mm-HH:mm do (w zakresie 00:00–23:59),
               - "activity": krótki opis zadania.
+              - "type": typ aktywnosci do wyboru z opcji [
+                    user-defined (scisle okreslone przez uzytkownika w zapytaniu i nie jest taskiem), 
+                    misc (dodane przez ciebie rzeczy ktorych nie mozna zaliczyc do taskow), 
+                    task (dodane przez ciebie lub uzytkownika aktywnosci ktore mozna zaliczyc jako taski do zrobienia, w ciagu dnia musza byc co najmniej 3 taski)
+                ].
+              - "tasktype": typ tasku (jesli type jest inny niz task zostaw Nie jako string), 
+              do wyboru z opcji [
+                czas (np czytanie, cwiczenia rozne itd.),
+                odleglosc (np bieg, spacer, basen itd.)
+              ]
+              
+
             Zadania do uwzględnienia: $tasks
             Rozmieść zadania w logicznych godzinach (np. od 07:00 do 22:00 co godzine).
             Odpowiedz **TYLKO** czystym JSON-em, bez żadnego tekstu dodatkowego.
@@ -180,9 +192,9 @@ public fun GetDayplan(tasks: String): String {
             Format przykład:
             {
               "Monday": [
-                { "time": "07:00", "activity": "Poranna gimnastyka" },
-                { "time": "08:00", "activity": "Śniadanie" },
-                { "time": "10:00", "activity": "Spotkanie zespołu" }
+                { "time": "07:00-07:40", "activity": "Poranna gimnastyka" },
+                { "time": "08:00-08:30", "activity": "Śniadanie" },
+                { "time": "10:00-10:30", "activity": "Spotkanie zespołu" }
               ]
             }
         """
