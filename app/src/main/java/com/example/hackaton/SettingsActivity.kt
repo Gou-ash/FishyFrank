@@ -17,7 +17,7 @@ class SettingsActivity : AppCompatActivity() {
         binding = SettingsActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val HomeActivityButton = findViewById<ImageButton>(R.id.HomeTimeButton)
+        val HomeActivityButton = findViewById<ImageButton>(R.id.SetingsHomeButton)
         HomeActivityButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -29,9 +29,9 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(intent)
    3     }
 
-        val SettingsActivityButton = findViewById<ImageButton>(R.id.SetingsSetingsButton)
+        val SettingsActivityButton = findViewById<ImageButton>(R.id.settingsActivityButton4)
         SettingsActivityButton.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
+            val intent = Intent(this, time_per_app_activity::class.java)
             startActivity(intent)
         }
 
