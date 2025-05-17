@@ -17,18 +17,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 // Main ask function
-public fun askGemini(dzien: Dzien, prompt: String, onResponse: (String) -> Unit) {
+public fun askGemini(prompt: String, onResponse: (String) -> Unit) {
     // Build retrofit
     val retrofit = Retrofit.Builder()
         .baseUrl("https://generativelanguage.googleapis.com/")
@@ -38,7 +35,7 @@ public fun askGemini(dzien: Dzien, prompt: String, onResponse: (String) -> Unit)
     // Generate request
     val api = retrofit.create(GeminiApi::class.java)
     val request = GeminiRequest(
-        contents = listOf(Content(parts = listOf(Part(text =  GetDayplan(dzien, prompt)))))
+        contents = listOf(Content(parts = listOf(Part(text =  GetDayplan(prompt)))))
     )
 
     // API KEY
@@ -82,7 +79,7 @@ fun GeminiChatScreen(
         OutlinedTextField(
             value = prompt,
             onValueChange = { prompt = it },
-            label = { Text("Zadaj pytanie") },
+            label = { Text("Opisz co chcesz robić dzisiaj") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -92,29 +89,27 @@ fun GeminiChatScreen(
             onClick = { onSend(prompt) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Wyślij")
+            Text("Wygeneruj plan!")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = responseText,
-            fontSize = 16.sp,
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (responseText!="Odpowiedź pojawi się tutaj") {
+            CreatePlan(stripFences(responseText))
+        }
     }
 }
 
 
 @Composable
-fun GeminiTest(dzien: Dzien) {
+fun GeminiTest() {
     var responseText by remember { mutableStateOf("Odpowiedź pojawi się tutaj") }
 
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             GeminiChatScreen(
                 onSend = { prompt ->
-                    askGemini(dzien, prompt) { reply ->
+                    askGemini(prompt) { reply ->
                         responseText = reply
                     }
                 },
@@ -123,8 +118,6 @@ fun GeminiTest(dzien: Dzien) {
         }
     }
 
-    if (responseText!="Odpowiedź pojawi się tutaj")
-        CreatePlan(stripFences(responseText), dayName = "SOBOTA")
 }
 
 fun stripFences(raw: String): String {

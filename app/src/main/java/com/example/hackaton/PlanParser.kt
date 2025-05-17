@@ -19,19 +19,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Serializable
 data class PlanEntry(val time: String, val activity: String)
 
-fun parsePlan(json: String, dayName: String): List<PlanEntry> {
+fun parsePlan(json: String): List<PlanEntry> {
     val tree = Json.parseToJsonElement(json).jsonObject
-    val arr = tree[dayName]?.toString() ?: "[]"
+    val arr = tree["SOBOTA"]?.toString() ?: "[]"
     return Json.decodeFromString(arr)
 }
 
 @Composable
 fun DayPlanTimeline(entries: List<PlanEntry>) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())   // <-- tu
+    ) {
         entries.forEach { entry ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
@@ -51,8 +58,8 @@ fun DayPlanTimeline(entries: List<PlanEntry>) {
 }
 
 @Composable
-fun CreatePlan(json: String, dayName: String) {
-    val plan = remember(json) { parsePlan(json, dayName) }
+fun CreatePlan(json: String) {
+    val plan = remember(json) { parsePlan(json) }
 
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {

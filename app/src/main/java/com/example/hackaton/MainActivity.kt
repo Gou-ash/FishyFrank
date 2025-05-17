@@ -11,8 +11,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             // Gemini test
-            GeminiTest(dzien = Dzien.SOBOTA)
-
+            GeminiTest()
         }
     }
 

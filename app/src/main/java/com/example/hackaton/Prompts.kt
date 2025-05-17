@@ -1,16 +1,17 @@
 package com.example.hackaton
 
-public fun GetDayplan(dzien: Dzien, tasks: String): String {
+public fun GetDayplan(tasks: String): String {
     val head = """
             Jesteś asystentem pomagającym w planowaniu. 
-            Proszę wygeneruj plan dnia zawierający tylko podane zadania na $dzien w formacie JSON. 
-            Nazwa obiektu to $dzien.
+            Miej w uwadzę to że pomagasz użytkownikowi ze zdrowiem psychicznym i 
+            we walce z nadmiernym screen timem.
+            Miej na uwadzę poprzednie zapytania, i poprzedni przeslany przez ciebie plan.
+            Nazwa obiektu to SOBOTA.
             Każdy wpis ma mieć pola:
               - "time": godzina w formacie HH:mm (w zakresie 00:00–23:59),
               - "activity": krótki opis zadania.
             Zadania do uwzględnienia: $tasks
-            Rozmieść zadania w logicznych godzinach (np. od 07:00 do 22:00).
-            Jeśli brak zadań, zwróć pustą tablicę, np. `{ "$dzien": [] }`.
+            Rozmieść zadania w logicznych godzinach (np. od 07:00 do 22:00 co godzine).
             Odpowiedz **TYLKO** czystym JSON-em, bez żadnego tekstu dodatkowego.
             Upewnij się, że JSON jest poprawny składniowo.
             
@@ -50,15 +51,4 @@ object Prompts {
           - "activity": krótki opis zadania.
         Odpowiedz **TYLKO** czystym JSON-em, bez żadnego tekstu dodatkowego.
     """
-}
-
-
-enum class Dzien {
-    PONIEDZIALEK,
-    WTOREK,
-    SRODA,
-    CZWARTEK,
-    PIATEK,
-    SOBOTA,
-    NIEDZIELA
 }
